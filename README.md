@@ -1,5 +1,10 @@
 # NYC_Taxi_Fare_Prediction
-Predicting the fare amount (inclusive of tolls) for a taxi ride in New York City given the pickup and dropoff locations
+Predicting the fare amount (inclusive of tolls) for a taxi ride in New York City given the pickup and dropoff locations.
+
+Notice:
+The training dataset for this project is more than 5.3 GB so it is impossible to upload to here, 
+please using the following link to run this program with kaggle kernels, which avoid storing large scale training dataset on local machine.
+https://www.kaggle.com/c/new-york-city-taxi-fare-prediction/kernels
 
 The evaluation metric for this project is the root mean-squared error (RMSE). 
 RMSE measures the difference between the predictions of a model, and the corresponding ground truth.
