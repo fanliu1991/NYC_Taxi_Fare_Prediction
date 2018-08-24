@@ -110,13 +110,39 @@ def tolls_fees(trip):
     
     return trip
 
+# calculate fare amount prediction based on features and coefficients
+def predict_fare_amount(row, trip):
+    input_value = [1] + row.tolist()
+
+    if trip == "normal":
+        coef = metered_fare_coef_dic[row["year"]]
+    else:
+        coef = flat_fare_coef_dic[row["year"]]
+    
+    fare_amount_prediction = sum([a*b for a,b in zip(input_value, coef)]).round(decimals = 2)
+    return fare_amount_prediction
+
+# make a plot to show the difference between real fare amount and predicted fare amount
+def plot_prediction_analysis(real_fare, predicted_fare):    
+    plt.scatter(real_fare, predicted_fare)
+    plt.xlabel("real fare amount")
+    plt.ylabel("predicted fare amount")
+    plt.plot([0, max(df_train["fare_amount"])], [0, max(df_train["fare_amount"])], color='red', linestyle='-', linewidth=0.5)
+    rmse = np.sqrt(mean_squared_error(real_fare, predicted_fare))
+    plt.title('rmse = {:.2f}, with zero residual diagonal line'.format(rmse))
+    plt.show()
 
 
-
-
-
-
-
+# preprocessing dataset to extract features
+def preprocess_dataset(df):
+    df['distance_km'] = df.apply(lambda x: distance(x["pickup_latitude"], x["pickup_longitude"], \
+                                   x["dropoff_latitude"], x["dropoff_longitude"]), axis=1)
+    df["airport"] = df.apply(lambda x: to_airport(x["dropoff_latitude"], x["dropoff_longitude"]), axis=1)
+    df = df.apply(lambda r: extract_time(r), axis=1)
+    df_hour_type = pd.get_dummies(df["hour_type"])
+    df = df.join(df_hour_type)
+    df["fare_amount_no_surage"] = df.apply(lambda r: remove_surage(r), axis=1)
+    return df
 
 
 
