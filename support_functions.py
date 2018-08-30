@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import path
+from sklearn.metrics import mean_squared_error, explained_variance_score
 
 import background_information as bi
 
@@ -111,23 +112,20 @@ def tolls_fees(trip):
     return trip
 
 # calculate fare amount prediction based on features and coefficients
-def predict_fare_amount(row, trip):
+def predict_fare_amount(row, coef_dic):
     input_value = [1] + row.tolist()
-
-    if trip == "normal":
-        coef = metered_fare_coef_dic[row["year"]]
-    else:
-        coef = flat_fare_coef_dic[row["year"]]
-    
+    coef = coef_dic[row["year"]]
     fare_amount_prediction = sum([a*b for a,b in zip(input_value, coef)]).round(decimals = 2)
     return fare_amount_prediction
 
 # make a plot to show the difference between real fare amount and predicted fare amount
-def plot_prediction_analysis(real_fare, predicted_fare):    
+def plot_prediction_analysis(real_fare, predicted_fare):
     plt.scatter(real_fare, predicted_fare)
     plt.xlabel("real fare amount")
     plt.ylabel("predicted fare amount")
-    plt.plot([0, max(df_train["fare_amount"])], [0, max(df_train["fare_amount"])], color='red', linestyle='-', linewidth=0.5)
+    # the largest fare amount is
+    max_fare = max(list(real_fare) + list(predicted_fare))
+    plt.plot([0, max_fare], [0, max_fare], color='red', linestyle='-', linewidth=0.5)
     rmse = np.sqrt(mean_squared_error(real_fare, predicted_fare))
     plt.title('rmse = {:.2f}, with zero residual diagonal line'.format(rmse))
     plt.show()
